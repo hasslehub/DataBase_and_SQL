@@ -83,33 +83,3 @@ SELECT
         WHEN order_status = 'CANCELLED' THEN 'Order is cancelled' 
     END AS full_order_status
 FROM orders;
-
--- Дополнительное задание:
-
--- 1. Установка внешнего ключа:
-
-ALTER TABLE orders
-ADD CONSTRAINT fk_orders_sales
-FOREIGN KEY (product)
-REFERENCES sales(product);
-
--- 2. Получение нужных данных без использования оператора JOIN:
-
-SELECT 
-    p.title AS publication_title, 
-    p.description AS publication_description, 
-    p.author_id, 
-    c.login AS author_login
-FROM 
-    publications AS p
-INNER JOIN clients AS c ON p.author_id = c.id;
-
--- 3. Выполнение поиска по публикациям, автором которых является клиент "Mikle":
-
-SELECT 
-    title, 
-    description 
-FROM 
-    publications 
-WHERE 
-    author_id = (SELECT id FROM clients WHERE login = 'Mikle');
