@@ -1,8 +1,13 @@
+CREATE DATABASE IF NOT EXISTS home_work_4;
+
+USE home_work_4;
+
 CREATE TABLE `shops` (
 	`id` INT,
     `shopname` VARCHAR (100),
     PRIMARY KEY (id)
 );
+
 CREATE TABLE `cats` (
 	`name` VARCHAR (100),
     `id` INT,
@@ -29,7 +34,8 @@ VALUES
 
 ------- Последнее задание, таблица:
 
-DROP TABLE IF EXISTS Analysis:
+DROP TABLE IF EXISTS Analysis;
+
 CREATE TABLE Analysis
 (
 	an_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -38,6 +44,7 @@ CREATE TABLE Analysis
 	an_price INT,
 	an_group INT
 );
+
 INSERT INTO analysis (an_name, an_cost, an_price, an_group)
 VALUES 
 	('Общий анализ крови', 30, 50, 1),
@@ -48,9 +55,8 @@ VALUES
 	('Общий анализ мочи', 25, 40, 2),
 	('Тест на COVID-19', 160, 210, 3);
 
-
-
 DROP TABLE IF EXISTS GroupsAn;
+
 CREATE TABLE GroupsAn
 (
 	gr_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -109,15 +115,17 @@ VALUES
 	('2020-02-12 07:10:54', 2),
 	('2020-02-12 07:20:19', 3),
 	('2020-02-12 07:35:38', 1);
-
-
-
+    
+-- Используя JOIN-ы, выполните следующие операции:
 -- Вывести всех котиков по магазинам по id (условие соединения shops.id = cats.shops_id)
+
 SELECT cats.name, shops.shopname
 FROM cats
 JOIN shops ON shops.id = cats.shops_id;
 
--- Вывести магазин, в котором продается кот “Murzik” (попробуйте выполнить 2 способами)
+
+-- Вывести магазин, в котором продается кот “Мурзик” (попробуйте выполнить 2 способами)
+
 -- INNER JOIN и WHERE
 SELECT shops.shopname
 FROM shops
@@ -130,12 +138,11 @@ SELECT shopname
 FROM shops
 WHERE id = (SELECT shops_id FROM cats WHERE name = 'Murzik');
 
-
--- Вывести магазины, в которых НЕ продаются коты “Murzik” и “Zuza”
-SELECT s.shopname 
-FROM shops s
-LEFT JOIN cats c ON s.id = c.shops_id AND (c.name = 'Murzik' OR c.name = 'Zuza')
-WHERE c.name IS NULL; 
+-- Вывести магазины, в которых НЕ продаются коты “Мурзик” и “Zuza”
+SELECT shopname 
+FROM shops
+LEFT JOIN cats ON shops.id = cats.shops_id AND (cats.name = 'Murzik' OR cats.name = 'Zuza')
+WHERE cats.name IS NULL;
 
 -- Вывести название и цену для всех анализов, которые продавались 5 февраля 2020 и всю следующую неделю.
 /*
@@ -154,6 +161,7 @@ ord_id — ID заказа;
 ord_datetime — дата и время заказа;
 ord_an — ID анализа.
 */
+
 SELECT an_name, an_price
 FROM Analysis
 JOIN Orders ON Analysis.an_id = Orders.ord_an
