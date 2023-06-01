@@ -1,4 +1,9 @@
-create table users
+CREATE DATABASE IF NOT EXISTS home_work_4;
+
+USE home_work_4;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users
 (
     id  int auto_increment primary key,
     login varchar(255) null,
@@ -6,7 +11,8 @@ create table users
     male  tinyint      null
 );
 
-create table clients
+DROP TABLE IF EXISTS clients;
+CREATE TABLE clients
 (
     id    int auto_increment primary key,
     login varchar(255) null,
@@ -19,7 +25,6 @@ INSERT INTO users (login, pass, male) VALUES ('Mikle', '$ws$10$6SzbBCMENklStIgTq
 INSERT INTO users (login, pass, male) VALUES ('Olia', '$2y$10$88zbBCKLJklStIgTqBKIluijJUnbeZ5WqJI4RJgkksnFZon5kH14y', 2);
 INSERT INTO users (login, pass, male) VALUES ('Tom', '$2y$20$6SzbBCNRNklStIgTqBKIluijJUnbeZ5WqIu4RJgkksnFZon5kH20y', 1);
 INSERT INTO users (login, pass, male) VALUES ('Margaret', '$2y$20$6SzbBCNRNklStIgTqBKIluijJUnbeZ4wqIu4RJgkksnFZon5kH20y', 2);
-INSERT INTO users (login, pass, male) VALUES ('alex', '$2y$10$6SzbBCMENklStIgTqBKIluijJUnbeZ5WqIu4RJgkksnFZon5kH14y', 1);
 
 INSERT INTO clients (login, pass, male) VALUES ('alexander', '$2y$10$6SzbBCMENklStIgTqBKIluijJUnbeZ5WqIu4RJgkksnFZon5kH14y', 1);
 INSERT INTO clients (login, pass, male) VALUES ('Mikle', '$ws$10$6SzbBCMENklStIgTqBKIluijJUnbeZ5WqIu4RJgkksnFZon5kH14y', 1);
@@ -35,6 +40,7 @@ INSERT INTO clients (login, pass, male) VALUES ('alex', '$2y$10$6SzbBCMENklStIgT
 
 
 -- Задание на EXISTS
+DROP TABLE IF EXISTS Employee;
 CREATE TABLE Employee (
   Id INT PRIMARY KEY,
   Name VARCHAR(45) NOT NULL,
@@ -44,6 +50,7 @@ CREATE TABLE Employee (
   Age INT NOT NULL,
   City VARCHAR(45) NOT NULL
 );
+
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1001, 'John Doe', 'IT', 35000, 'Male', 25, 'London');
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1002, 'Mary Smith', 'HR', 45000, 'Female', 27, 'London');
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1003, 'James Brown', 'Finance', 50000, 'Male', 28, 'London');
@@ -54,6 +61,8 @@ INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES 
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1008, 'Sambit Mohanty', 'IT', 50000, 'Male', 28, 'Mumbai');
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1009, 'Pranaya Kumar', 'IT', 50000, 'Male', 28, 'Mumbai');
 INSERT INTO Employee (Id, `Name`, Department, Salary, Gender, Age, City) VALUES (1010, 'Hina Sharma', 'HR', 75000, 'Female', 26, 'Mumbai');
+
+DROP TABLE IF EXISTS Projects;
 CREATE TABLE Projects (
  ProjectId INT PRIMARY KEY AUTO_INCREMENT,
       Title VARCHAR(200) NOT NULL,
@@ -62,6 +71,7 @@ CREATE TABLE Projects (
      StartDate DATETIME,
      EndDate DATETIME
 );
+
 INSERT INTO Projects ( Title, ClientId, EmployeeId, StartDate, EndDate) VALUES 
 ('Develop ecommerse website from scratch', 1, 1003, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY)),
 ('WordPress website for our company', 1, 1002, NOW(), DATE_ADD(NOW(), INTERVAL 45 DAY)),
@@ -73,6 +83,7 @@ INSERT INTO Projects ( Title, ClientId, EmployeeId, StartDate, EndDate) VALUES
 ('Android Application development', 4, 1004, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY));
 
 -- Собеседования
+DROP TABLE IF EXISTS AUTO;
 CREATE TABLE  AUTO 
 (       
 	REGNUM VARCHAR(10) PRIMARY KEY, 
@@ -82,7 +93,7 @@ CREATE TABLE  AUTO
 	PHONENUM VARCHAR(15)
 );
 
-
+DROP TABLE IF EXISTS CITY;
 CREATE TABLE  CITY 
 (	
     CITYCODE INT PRIMARY KEY,
@@ -90,7 +101,7 @@ CREATE TABLE  CITY
 	PEOPLES INT 
 );
 
-
+DROP TABLE IF EXISTS MAN;
 CREATE TABLE  MAN 
 (	
 	PHONENUM VARCHAR(15) PRIMARY KEY , 
@@ -206,96 +217,21 @@ VALUES('9213333332','Миша','Рогозин', 2, 21);
 INSERT INTO MAN (PHONENUM,FIRSTNAME,LASTNAME,CITYCODE,YEAROLD)
 VALUES('9214444444','Алексей','Галкин', 1, 38);
 
-
---  Вывести на экран количество машин каждого цвета для машин марок BMW и LADA
-SELECT MARK, color, COUNT(color) AS 'Quantity of cars' FROM AUTO
+-- 1. Вывести на экран сколько машин каждого цвета для машин марок BMW и LADA
+SELECT MARK 'Марка', color 'Цвет', COUNT(color)'Кол-во машин' FROM AUTO
 WHERE MARK = 'LADA'
 GROUP BY color, mark 
-UNION SELECT MARK, color, COUNT(color) AS 'Quantity of cars' FROM AUTO
+UNION SELECT MARK, color, COUNT(color) FROM AUTO
 WHERE MARK = 'BMW'
 GROUP BY color, mark;
 
---  Вывести на экран марку авто и количество AUTO не этой марки
-SELECT MARK, (COUNT(color) - 1) AS 'Quantity of cars' FROM AUTO
+-- 2. Вывести на экран марку авто и количество AUTO не этой марки
+-- Сколько машин какой марки
+SELECT MARK, COUNT(MARK)'Кол-во машин' FROM AUTO
 GROUP BY MARK;
 
-
-
- -- 1. Подсчитать общее количество лайков, которые получили пользователи младше 12 лет.
-SELECT 
-	COUNT(*) AS 'Общее кол-во лайков'
-FROM likes
-WHERE user_id IN (
-	SELECT user_id 
-	FROM profiles
-	WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 12);
-
--- или 
-SELECT COUNT(*) 'likes count'
-FROM likes l 
-JOIN
-profiles p 
-WHERE p.user_id = l.user_id AND TIMESTAMPDIFF(YEAR, p.birthday, NOW()) < 10;
-
--- для проверки количества и id пользователей, котороые удовлетворяют условиям
-SELECT * FROM profiles 
-WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 12;
-
-
-
-
-
--- 2. Определить кто больше поставил лайков (всего): мужчины или женщины.
-SELECT CASE (gender)
-	WHEN 'm' THEN 'Мужчины'
-	WHEN 'f' THEN 'Женщины'
-    END AS 'Больше лайков ставят:', COUNT(*) as 'Кол-во лайков'
-FROM profiles p 
-JOIN likes l 
-WHERE l.user_id = p.user_id
-GROUP BY gender 
-LIMIT 1; -- для проверки можно увеличить LIMIT
-
-
- 
--- 3. Вывести всех пользователей, которые не отправляли сообщения.
-SELECT DISTINCT CONCAT(firstname, ' ', lastname, ' (id: ', (id), ')') AS 'Не отправляют сообщения'
-FROM users
-WHERE NOT EXISTS (
-	SELECT from_user_id
-	FROM messages
-	WHERE users.id = messages.from_user_id
-);
-
-
-/*
-(по желанию)* Пусть задан некоторый пользователь. Из всех друзей этого пользователя найдите человека, который больше всех написал ему сообщений.
-*/
-SELECT from_user_id AS 'id отправителя', 
-	(SELECT CONCAT(firstname,' ', lastname) 
-    FROM users 
-    WHERE id = messages.from_user_id) AS 'Фамилия и имя отправителя', COUNT(*) AS `Отправлено сообщений`
-FROM messages 
-WHERE to_user_id = 1 AND from_user_id IN (
-	SELECT initiator_user_id 
-    FROM friend_requests 
-    WHERE (target_user_id = 1) AND status ='approved'
-    UNION
-    SELECT target_user_id 
-    FROM friend_requests 
-    WHERE (initiator_user_id = 1) AND status ='approved' 
-)
-GROUP BY from_user_id
-ORDER BY `Отправлено сообщений` DESC 
-LIMIT 1;
-
--- 1. Пусть задан некоторый пользователь. Из всех пользователей соц. сети найдите человека, который больше всех общался с выбранным пользователем (написал ему сообщений).
-
-SELECT u.firstname, u.lastname 
-FROM users u
-JOIN
-messages m
-WHERE m.from_user_id = u.id AND m.to_user_id = 1 
-GROUP BY u.firstname, u.lastname
-ORDER BY COUNT(from_user_id) DESC
-LIMIT 1
+-- Из общего кол-ва машин убираем определенную марку
+SELECT MARK 'Кол-во машин не этой марки' FROM AUTO
+WHERE MARK = 'AUDI'
+UNION SELECT  COUNT(MARK) FROM AUTO
+WHERE MARK NOT IN ('AUDI');
