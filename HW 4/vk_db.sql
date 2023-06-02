@@ -288,7 +288,16 @@ WHERE NOT EXISTS (
 	WHERE users.id = messages.from_user_id
 );
 
-
+-- Посчитать количество документов у каждого пользователя
+SELECT user_id,
+	COUNT(id) 'Кол-во документов',
+    (SELECT email 
+    FROM users
+    WHERE users.id = media.user_id) 'user email'
+FROM media
+GROUP BY user_id
+ORDER BY COUNT(id) DESC
+LIMIT 5;
 
 -- (по желанию)* Пусть задан некоторый пользователь. 
 -- Из всех друзей этого пользователя найдите человека, который больше всех написал ему сообщений.
