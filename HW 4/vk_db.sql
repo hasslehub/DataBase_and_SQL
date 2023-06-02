@@ -217,7 +217,7 @@ SELECT
 	p.hometown AS city, -- P = profiles
 	m.filename AS medifile -- m = media
 FROM users u
-JOIN 'profiles' p ON p.user_id = u.id -- Получил p.hometown
+JOIN profiles p ON p.user_id = u.id -- Получил p.hometown
 JOIN media m ON p.photo_id = m.id;
 
 -- Все файлы
@@ -227,7 +227,7 @@ SELECT
 	p.hometown AS city, -- P = profiles
 	m.filename AS medifile -- m = media
 FROM users u
-JOIN 'profiles' p ON p.user_id = u.id -- Получил p.hometown
+JOIN profiles p ON p.user_id = u.id -- Получил p.hometown
 JOIN media m ON m.user_id = u.id;
 
 -- Список медиафайлов пользователя с кол-вом лаков
@@ -246,51 +246,41 @@ LIMIT 5;
 -- Список медиафайлов пользователя, указывая название типа файла
 SELECT
 	m.filename AS medifile,
-	mt.name type AS mediatype
+	mt.name_type AS mediatype
 FROM media m
 LEFT JOIN media_types mt
 ON m.media_type_id = mt.id;
 
+/*
+Допы к соц.сети:
+*/
 
  -- 1. Подсчитать общее количество лайков, которые получили пользователи младше 12 лет.
-SELECT 
-	COUNT(*) AS 'Общее кол-во лайков'
-FROM likes
-WHERE user_id IN (
-	SELECT user_id 
-	FROM profiles
-	WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 12);
 
--- или 
-SELECT COUNT(*) 'likes count'
-FROM likes l 
-JOIN
-profiles p 
-WHERE p.user_id = l.user_id AND TIMESTAMPDIFF(YEAR, p.birthday, NOW()) < 10;
+SELECT COUNT(*)  'Общее кол-во лайков'
+FROM likes 
+JOIN profiles 
+WHERE profiles.user_id = likes .user_id AND TIMESTAMPDIFF(YEAR, profiles.birthday, NOW()) <= 12;
 
--- для проверки количества и id пользователей, котороые удовлетворяют условиям
-SELECT * FROM profiles 
-WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 12;
-
-
-
-
+-- для проверки количества пользователей, котороые удовлетворяют условиям
+-- SELECT * FROM profiles 
+-- WHERE TIMESTAMPDIFF(YEAR,birthday, NOW()) <= 12;
 
 -- 2. Определить кто больше поставил лайков (всего): мужчины или женщины.
 SELECT CASE (gender)
 	WHEN 'm' THEN 'Мужчины'
 	WHEN 'f' THEN 'Женщины'
-    END AS 'Больше лайков ставят:', COUNT(*) as 'Кол-во лайков'
-FROM profiles p 
-JOIN likes l 
-WHERE l.user_id = p.user_id
+    END AS 'Больше лайков ставят:', COUNT(*) 'Кол-во лайков'
+FROM profiles 
+JOIN likes
+WHERE likes.user_id = profiles .user_id
 GROUP BY gender 
-LIMIT 1; -- для проверки можно увеличить LIMIT
+LIMIT 2;
 
 
  
 -- 3. Вывести всех пользователей, которые не отправляли сообщения.
-SELECT DISTINCT CONCAT(firstname, ' ', lastname, ' (id: ', (id), ')') AS 'Не отправляют сообщения'
+SELECT DISTINCT CONCAT(firstname, ' ', lastname, ' (id: ', (id), ')') 'Не отправляют сообщения'
 FROM users
 WHERE NOT EXISTS (
 	SELECT from_user_id
@@ -299,34 +289,17 @@ WHERE NOT EXISTS (
 );
 
 
-/*
-(по желанию)* Пусть задан некоторый пользователь. Из всех друзей этого пользователя найдите человека, который больше всех написал ему сообщений.
-*/
-SELECT from_user_id AS 'id отправителя', 
-	(SELECT CONCAT(firstname,' ', lastname) 
-    FROM users 
-    WHERE id = messages.from_user_id) AS 'Фамилия и имя отправителя', COUNT(*) AS `Отправлено сообщений`
-FROM messages 
-WHERE to_user_id = 1 AND from_user_id IN (
-	SELECT initiator_user_id 
-    FROM friend_requests 
-    WHERE (target_user_id = 1) AND status ='approved'
-    UNION
-    SELECT target_user_id 
-    FROM friend_requests 
-    WHERE (initiator_user_id = 1) AND status ='approved' 
-)
-GROUP BY from_user_id
-ORDER BY `Отправлено сообщений` DESC 
+
+-- (по желанию)* Пусть задан некоторый пользователь. 
+-- Из всех друзей этого пользователя найдите человека, который больше всех написал ему сообщений.
+
+SELECT 
+	CONCAT(users.firstname,' ', users.lastname) 'Отправитель',
+    messages.to_user_id 'Получатель',
+    COUNT(*) 'Кол-во сообщений'
+FROM users
+JOIN messages ON users.id = messages.from_user_id
+WHERE messages.to_user_id = 5
+GROUP BY messages.from_user_id
+ORDER BY COUNT(*) DESC
 LIMIT 1;
-
--- 1. Пусть задан некоторый пользователь. Из всех пользователей соц. сети найдите человека, который больше всех общался с выбранным пользователем (написал ему сообщений).
-
-SELECT u.firstname, u.lastname 
-FROM users u
-JOIN
-messages m
-WHERE m.from_user_id = u.id AND m.to_user_id = 1 
-GROUP BY u.firstname, u.lastname
-ORDER BY COUNT(from_user_id) DESC
-LIMIT 1
