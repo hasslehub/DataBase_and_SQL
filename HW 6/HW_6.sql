@@ -297,7 +297,7 @@ BEGIN
     
 END $$
 
-CALL add_new_user("test", "test", "test", "m", '2011-12-20', "test", "test", "test", @user_id);
+CALL add_new_user("firstname", "lastname", "email@email.com", "m", '1990-12-31', "hometown", "picture", "photo3", @user_id);
 
 SELECT *
 FROM users
